@@ -1,4 +1,4 @@
-import Uploader from "../uploader.js";
+import Uploader from "../utils/uploader.js";
 
 export const uploadSingleFile = async (req, res) => {
     const controller = new Uploader(`.${req.path}`);
