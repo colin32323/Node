@@ -1,7 +1,8 @@
 import multer from "multer";
 
 class Uploader {
-    constructor(saveLocation, fileType) {
+    constructor(saveLocation, uploadLocation) {
+        this.uploadLocation = uploadLocation;
         this.saveLocation = saveLocation || "./uploads/untagged";
         this.allowedFileTypes = [
             "image/jpeg",
@@ -14,13 +15,29 @@ class Uploader {
 
     storageConfig() {
         return multer.diskStorage({
-            destination: (req, file, cb) => {},
-            filename: (req, file, cb) => {},
+            destination: (req, file, cb) => {
+                cb(null, this.uploadLocation);
+            },
+            filename: (req, file, cb) => {
+                const fileName = `${Date.now()}-${file.originalname}`;
+                cb(null, fileName);
+            },
         });
     }
 
     fileFilterConfig(req, file, cb) {
-        return cb(null, true);
+        if (this.allowedFileTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(
+                new Error(
+                    `Invalid file type. Allowed file types are : ${this.allowedFileTypes.join(
+                        ", "
+                    )}`
+                ),
+                false
+            );
+        }
     }
 
     config() {
@@ -30,4 +47,14 @@ class Uploader {
             fileFilter: this.fileFilterConfig.bind(this),
         });
     }
+
+    singleMediaUpload() {
+        return this.config().single("media");
+    }
+
+    multiMediaUpload() {
+        return this.config().array("medias", 5);
+    }
 }
+
+export default Uploader;
