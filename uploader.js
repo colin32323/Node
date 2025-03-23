@@ -1,9 +1,8 @@
 import multer from "multer";
 
 class Uploader {
-    constructor(saveLocation, uploadLocation) {
-        this.uploadLocation = uploadLocation;
-        this.saveLocation = saveLocation || "./uploads/untagged";
+    constructor(uploadLocation) {
+        this.uploadLocation = uploadLocation || "./uploads/untagged";
         this.allowedFileTypes = [
             "image/jpeg",
             "image/png",
@@ -19,7 +18,9 @@ class Uploader {
                 cb(null, this.uploadLocation);
             },
             filename: (req, file, cb) => {
-                const fileName = `${Date.now()}-${file.originalname}`;
+                const fileName = `${Math.floor(Math.random() * 1000000)}-${
+                    file.originalname
+                }`;
                 cb(null, fileName);
             },
         });
@@ -49,7 +50,9 @@ class Uploader {
     }
 
     singleMediaUpload() {
-        return this.config().single("media");
+        {
+            return this.config().single("media");
+        }
     }
 
     multiMediaUpload() {
